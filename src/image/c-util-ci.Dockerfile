@@ -42,11 +42,11 @@ COPY            src src
 
 ARG             CAB_DNF_PACKAGES=""
 ARG             CAB_DNF_GROUPS=""
-RUN             ./src/scripts/dnf.sh "${CAB_DNF_PACKAGES}" "${CAB_DNF_GROUPS}"
+RUN             ./src/script/dnf.sh "${CAB_DNF_PACKAGES}" "${CAB_DNF_GROUPS}"
 
 ARG             CAB_DNF_PACKAGES_ALT=""
 ARG             CAB_DNF_GROUPS_ALT=""
-RUN             ./src/scripts/dnf.sh "${CAB_DNF_PACKAGES_ALT}" "${CAB_DNF_GROUPS_ALT}"
+RUN             ./src/script/dnf.sh "${CAB_DNF_PACKAGES_ALT}" "${CAB_DNF_GROUPS_ALT}"
 
 RUN             rm -rf /cab/src
 
