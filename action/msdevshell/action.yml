@@ -1,0 +1,63 @@
+#
+# MsDevShell - Microsoft DevShell for GitHub Actions
+#
+# This action uses `Enter-VsDevShell` provided by Microsoft Visual Studio to
+# prepare the shell environment. This environment is then exported into the
+# GitHub-Actions environment (i.e., `GITHUB_ENV`) so it is available to
+# following steps.
+#
+# This action requires the Microsoft utility `vswhere` to be accessible, and
+# uses it to locate the Visual Studio install location.
+#
+
+name: "Microsoft DevShell"
+description: "Merge into the Microsoft Visual Studio DevShell"
+inputs:
+  architecture:
+    description: "Machine architecture to use"
+    required: true
+    default: "x64"
+runs:
+  using: "composite"
+  steps:
+    - name: "Source Microsoft Visual Studio DevShell Environment"
+      shell: pwsh
+      run: |
+        function MsDevShell {
+          # Use `vswhere` to locate Visual Studio editions.
+          $products = 'Community','Professional','Enterprise','BuildTools' | %{ "Microsoft.VisualStudio.Product.$_" }
+          $vswhere = Get-Command 'vswhere'
+          $vs = & $vswhere.Path -products $products -latest -format json | ConvertFrom-Json
+
+          # Locate DevShell.dll within the Visual Studio installation.
+          $tools = Join-Path $vs.installationPath 'Common7' 'Tools'
+          $devshell = Join-Path $tools 'Microsoft.VisualStudio.DevShell.dll'
+          if (!(Test-Path $devshell -Type Leaf)) {
+              $devshell = Join-Path $tools 'vsdevshell' 'Microsoft.VisualStudio.DevShell.dll'
+          }
+          if (!(Test-Path $devshell -Type Leaf)) {
+              throw "error: cannot find Microsoft.VisualStudio.DevShell.dll"
+          }
+
+          # Import DevShell.dll and use Enter-VsDevShell.
+          Import-Module $devshell
+          Enter-VsDevShell -VsInstanceId $vs.instanceId -SkipAutomaticLocation -DevCmdArguments '-arch=${{ inputs.architecture }} -no_logo'
+        }
+
+        # Enter VsDevShell and collect the environment before and after.
+        $before = @{}
+        Get-ChildItem env: | %{ $before.Add($_.Name, $_.Value) }
+        MsDevShell
+        $after = @{}
+        Get-ChildItem env: | %{ $after.Add($_.Name, $_.Value) }
+
+        # Calculate environment update.
+        $diff = $after.GetEnumerator() | where { -not $before.ContainsKey($_.Name) -or $before[$_.Name] -ne $_.Value }
+
+        # Print and export environment update.
+        echo '----------------------------------------'
+        echo 'Updated Environment'
+        echo '----------------------------------------'
+        $diff | Format-List
+        echo '----------------------------------------'
+        $diff | %{ echo "$($_.Name)=$($_.Value)" >> $env:GITHUB_ENV }

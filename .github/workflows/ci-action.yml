@@ -1,0 +1,41 @@
+#
+# GitHub-Actions CI
+#
+# This workflow runs tests for the github-actions implemented in `./action/`.
+# It verifies accessibility of the released artifacts and functionality of the
+# latest version.
+#
+
+name: "CI for Custom Actions"
+
+on: [pull_request, push]
+
+jobs:
+  ci_msdevshell_testing:
+    name: "Test the MsDevShell Action"
+    runs-on: windows-latest
+
+    steps:
+    - name: "Clone Repository"
+      uses: actions/checkout@v2
+
+    - name: "Run local MsDevShell action"
+      uses: ./action/msdevshell
+      with:
+        architecture: "x64"
+
+    - name: "Verify MsDevShell"
+      run: cl
+
+  ci_msdevshell_release:
+    name: "Verify the MsDevShell Action Release"
+    runs-on: windows-latest
+
+    steps:
+    - name: "Run released MsDevShell action"
+      uses: bus1/cabuild/action/msdevshell@main
+      with:
+        architecture: "x64"
+
+    - name: "Verify MsDevShell"
+      run: cl
