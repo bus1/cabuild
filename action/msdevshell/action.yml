@@ -9,6 +9,16 @@
 # This action requires the Microsoft utility `vswhere` to be accessible, and
 # uses it to locate the Visual Studio install location.
 #
+# Currently, this will always locate the latest, native Visual Studio install.
+# This might be extended with an explicit version-selector in the future.
+#
+# Arguments:
+#
+#     architecture: This specifies the machine architecture to use. See the
+#                   Microsoft Visual Studio documentation for details. Common
+#                   values are `x64` for 64-bit x86 machines, `x86` for 32-bit
+#                   x86 machines.
+#
 
 name: "Microsoft DevShell"
 description: "Merge into the Microsoft Visual Studio DevShell"
