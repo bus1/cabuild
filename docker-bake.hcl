@@ -180,7 +180,7 @@ target "virtual-c-util-ci" {
                         "development-tools",
                 ]),
         }
-        dockerfile = "src/images/c-util-ci.Dockerfile"
+        dockerfile = "src/image/c-util-ci.Dockerfile"
         inherits = [
                 "virtual-default",
                 "virtual-platforms",
