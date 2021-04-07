@@ -1,0 +1,120 @@
+#
+# CI for Image Builds
+#
+# This workflow builds all images on every PR and Push. It verifies that the
+# images can be built successfully, and then possibly runs tests to verify
+# their correct behavior.
+#
+# If triggered by the deploy-hooks, the built images will be pushed out to
+# the configured registries.
+#
+
+name: "CI for Image Builds"
+
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Image Target'
+        required: true
+        default: 'default'
+
+jobs:
+  #
+  # Configure Jobs
+  #
+  # This job prepares parameters for the further builds. Amongst other things,
+  # it runs `make img-list` and provides this output as JSON array to other
+  # jobs. This allows us to dynamically react to additions to the image list
+  # and create new jobs for each image.
+  #
+  # Note that we have to split image builds across jobs since the individual
+  # CI runners do not have enough disk capacity to build all images.
+  #
+  config:
+    name: "Job Configuration"
+    runs-on: ubuntu-latest
+    outputs:
+      deploy: ${{ steps.parameters.outputs.deploy }}
+      images: ${{ steps.parameters.outputs.images }}
+      now: ${{ steps.parameters.outputs.now }}
+    steps:
+    - name: "Clone Repository"
+      uses: actions/checkout@v2
+    - name: "Determine Build Parameters"
+      id: parameters
+      env:
+        CTX_GITHUB_EVENT_NAME: ${{ github.event_name }}
+        CTX_GITHUB_EVENT_INPUTS_TARGET: ${{ github.event.inputs.target }}
+        IMG_DEPLOY: no
+        IMG_TARGET: all-images
+      run: |
+        if [[ "${CTX_GITHUB_EVENT_NAME}" = "workflow_dispatch" ]] ; then
+          IMG_DEPLOY="yes"
+          IMG_TARGET=${CTX_GITHUB_EVENT_INPUTS_TARGET}
+        fi
+
+        echo "::set-output name=deploy::${IMG_DEPLOY}"
+        echo "::set-output name=images::$(make img-list)"
+        echo "::set-output name=now::$(date -u '+%Y%m%d%H%M')"
+    - name: "Print Parameters"
+      env:
+        CTX_STEPS_PARAMETERS_OUTPUTS_DEPLOY: ${{ steps.parameters.outputs.deploy }}
+        CTX_STEPS_PARAMETERS_OUTPUTS_IMAGES: ${{ steps.parameters.outputs.images }}
+        CTX_STEPS_PARAMETERS_OUTPUTS_NOW: ${{ steps.parameters.outputs.now }}
+      run: |
+        echo "Deploy: ${CTX_STEPS_PARAMETERS_OUTPUTS_DEPLOY}"
+        echo "Images:"
+        echo "${CTX_STEPS_PARAMETERS_OUTPUTS_IMAGES}" | jq .
+        echo "End of Images"
+        echo "Now: ${CTX_STEPS_PARAMETERS_OUTPUTS_NOW}"
+
+  #
+  # Build/Test Images
+  #
+  # This job is run for each image-target. It builds the image locally and then
+  # runs configured tests (if any).
+  #
+  ci:
+    name: "Image Build/Test"
+    runs-on: ubuntu-latest
+    needs: config
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ${{ fromJson(needs.config.outputs.images) }}
+    env:
+      CAB_UNIQUEID: ${{ needs.config.outputs.now }}
+    steps:
+    - name: "Clone Repository"
+      uses: actions/checkout@v2
+
+    - name: "Prepare QEMU Emulators"
+      uses: docker/setup-qemu-action@v1
+    - name: "Prepare Docker Buildx"
+      id: buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: "Build Image"
+      env:
+        IMG_BAKE_ARGS: --load
+        IMG_BUILDER: ${{ steps.buildx.outputs.name }}
+        IMG_TARGET: ${{ matrix.image }}
+      run: make img-bake
+
+    - name: "Authenticate to GHCR"
+      if: ${{ needs.config.outputs.deploy == 'yes' }}
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: "Deploy Image"
+      if: ${{ needs.config.outputs.deploy == 'yes' }}
+      env:
+        IMG_BUILDER: ${{ steps.buildx.outputs.name }}
+        IMG_TARGET: ${{ matrix.image }}
+      run: make img-tags | jq -c '.[] | select(test("^ghcr.io"))' | xargs -L1 -- docker push
