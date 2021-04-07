@@ -33,7 +33,7 @@ jobs:
 
     steps:
     - name: "Run released MsDevShell action"
-      uses: bus1/cabuild/action/msdevshell@main
+      uses: bus1/cabuild/action/msdevshell@v1
       with:
         architecture: "x64"
 
