@@ -13,7 +13,15 @@ name: "CI for Image Builds"
 
 on:
   pull_request:
+    paths:
+    - 'docker-bake.hcl'
+    - 'src/image/**'
+    - 'src/script/**'
   push:
+    paths:
+    - 'docker-bake.hcl'
+    - 'src/image/**'
+    - 'src/script/**'
   workflow_dispatch:
     inputs:
       target:
