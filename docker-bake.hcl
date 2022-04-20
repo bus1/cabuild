@@ -67,7 +67,7 @@ function "mirror" {
 
 group "all-images" {
         targets = [
-                "all-c-util-ci",
+                "all-ci-c-util",
         ]
 }
 
@@ -92,19 +92,19 @@ target "virtual-platforms" {
 }
 
 /*
- * c-util-ci - C-Util CI Images
+ * ci-c-util - C-Util CI Images
  *
  * The following groups and targets build the CI images used by c-util. They
  * build on the official fedora images.
  */
 
-group "all-c-util-ci" {
+group "all-ci-c-util" {
         targets = [
-                "c-util-ci-latest",
+                "ci-c-util-latest",
         ]
 }
 
-target "virtual-c-util-ci" {
+target "virtual-ci-c-util" {
         args = {
                 CAB_DNF_PACKAGES = join(",", [
                         "audit-libs-devel",
@@ -180,21 +180,21 @@ target "virtual-c-util-ci" {
                         "development-tools",
                 ]),
         }
-        dockerfile = "src/image/c-util-ci.Dockerfile"
+        dockerfile = "src/image/ci-c-util.Dockerfile"
         inherits = [
                 "virtual-default",
                 "virtual-platforms",
         ]
 }
 
-target "c-util-ci-latest" {
+target "ci-c-util-latest" {
         args = {
                 CAB_FROM = "docker.io/library/fedora:latest",
         }
         inherits = [
-                "virtual-c-util-ci",
+                "virtual-ci-c-util",
         ]
         tags = concat(
-                mirror("c-util-ci", "latest", "", CAB_UNIQUEID),
+                mirror("ci-c-util", "latest", "", CAB_UNIQUEID),
         )
 }

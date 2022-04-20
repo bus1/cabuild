@@ -1,5 +1,5 @@
 #
-# c-util-ci - C-Util CI Images
+# ci-c-util - C-Util CI Images
 #
 # This image provides the OS environment for the C-Util continuous integration
 # on GitHub Actions. It is based on Fedora and includes all the required
