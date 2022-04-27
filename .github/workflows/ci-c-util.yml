@@ -1,0 +1,101 @@
+#
+# CI-C-Util Runner - C-Util CI Runner for Github Actions
+#
+
+name: "C-Util CI Runner"
+
+on:
+  workflow_call:
+    inputs:
+      cabuild_ref:
+        default: "main"
+        description: "CABuild Git-ref to use (should match the workflow-ref!)"
+        required: false
+        type: string
+      image:
+        default: "ghcr.io/bus1/ci-c-util:latest"
+        description: "Container image to use as environment"
+        required: false
+        type: string
+      m32:
+        default: false
+        description: "Run additional round in 32bit mode"
+        required: false
+        type: boolean
+      mesonargs:
+        default: ""
+        description: "Additional arguments to meson setup"
+        required: false
+        type: string
+      source:
+        default: ""
+        description: "File system path to the source directory relative to the workspace"
+        required: false
+        type: string
+      valgrind:
+        default: false
+        description: "Run additional test round through valgrind"
+        required: false
+        type: boolean
+
+jobs:
+
+  config:
+    name: "Job Configuration"
+    runs-on: ubuntu-latest
+    outputs:
+      jobs: ${{ steps.parameters.outputs.jobs }}
+    steps:
+    - name: "Clone CABuild Repository"
+      uses: actions/checkout@v3
+      with:
+        path: "cabuild"
+        ref: ${{ inputs.cabuild_ref }}
+        repository: "bus1/cabuild"
+    - name: "Clone Source Repository"
+      uses: actions/checkout@v3
+      with:
+        path: "source"
+    - name: "Determine Build Parameters"
+      id: parameters
+      env:
+        CTX_INPUTS_CABUILD_REF: ${{ inputs.cabuild_ref }}
+        CTX_INPUTS_IMAGE: ${{ inputs.image }}
+        CTX_INPUTS_M32: ${{ inputs.m32 }}
+        CTX_INPUTS_MESONARGS: ${{ inputs.mesonargs }}
+        CTX_INPUTS_SOURCE: ${{ inputs.source }}
+        CTX_INPUTS_VALGRIND: ${{ inputs.valgrind }}
+      run: bash ./cabuild/src/script/ci-c-util-suite.sh
+    - name: "Print Parameters"
+      env:
+        CTX_STEPS_PARAMETERS_OUTPUTS_JOBS: ${{ steps.parameters.outputs.jobs }}
+      run: |
+        echo "Jobs:"
+        echo "${CTX_STEPS_PARAMETERS_OUTPUTS_JOBS}" | jq .
+        echo "End of Images"
+
+  ci:
+    name: "Job Execution"
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ inputs.image }}
+    needs: config
+    strategy:
+      fail-fast: false
+      matrix:
+        job: ${{ fromJson(needs.config.outputs.jobs) }}
+    steps:
+    - name: "Clone CABuild Repository"
+      uses: actions/checkout@v3
+      with:
+        path: "cabuild"
+        ref: ${{ inputs.cabuild_ref }}
+        repository: "bus1/cabuild"
+    - name: "Clone Source Repository"
+      uses: actions/checkout@v3
+      with:
+        path: "source"
+    - name: "Invoke job executor"
+      env:
+        CTX_MATRIX_JOB: ${{ toJson(matrix.job) }}
+      run: bash ./cabuild/src/script/ci-c-util-job.sh
