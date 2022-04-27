@@ -16,12 +16,12 @@ on:
     paths:
     - 'docker-bake.hcl'
     - 'src/image/**'
-    - 'src/script/**'
+    - 'src/image-script/**'
   push:
     paths:
     - 'docker-bake.hcl'
     - 'src/image/**'
-    - 'src/script/**'
+    - 'src/image-script/**'
   workflow_dispatch:
     inputs:
       target:
