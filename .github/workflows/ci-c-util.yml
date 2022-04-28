@@ -19,7 +19,7 @@ on:
         type: string
       m32:
         default: false
-        description: "Run additional round in 32bit mode"
+        description: "Run in 32bit mode"
         required: false
         type: boolean
       mesonargs:
@@ -28,13 +28,13 @@ on:
         required: false
         type: string
       source:
-        default: ""
+        default: "."
         description: "File system path to the source directory relative to the workspace"
         required: false
         type: string
       valgrind:
         default: false
-        description: "Run additional test round through valgrind"
+        description: "Run through valgrind"
         required: false
         type: boolean
 
