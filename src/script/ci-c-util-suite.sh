@@ -16,6 +16,7 @@ set -e
 
 CAB_JOBS=()
 CAB_M32="false"
+CAB_MATRIXMODE="false"
 CAB_MESONARGS=""
 CAB_SOURCE="."
 CAB_VALGRIND="false"
@@ -38,6 +39,10 @@ if [[ ${CTX_INPUTS_M32} == "true" ]] ; then
         CAB_M32="true"
 fi
 
+if [[ ${CTX_INPUTS_MATRIXMODE} == "true" ]] ; then
+        CAB_MATRIXMODE="true"
+fi
+
 if [[ ${CTX_INPUTS_VALGRIND} == "true" ]] ; then
         CAB_VALGRIND="true"
 fi
@@ -49,15 +54,22 @@ CAB_SOURCE=$(jq -cRs . < <(printf "%s" "${CTX_INPUTS_SOURCE}"))
 # Job-list Assembly
 #
 
+CAB_MATRIX_M32=("${CAB_M32}")
+if [[ ${CAB_MATRIXMODE} == "true" && ${CAB_M32} == "true" ]] ; then
+        CAB_MATRIX_M32=("false" "true")
+fi
+
 CAB_JSON="["
-for CAB_I in "${CAB_JOBS[@]}" ; do
-        CAB_JSON+="{"
-        CAB_JSON+="\"job\":\"${CAB_I}\""
-        CAB_JSON+=",\"m32\":${CAB_M32}"
-        CAB_JSON+=",\"mesonargs\":${CAB_MESONARGS}"
-        CAB_JSON+=",\"source\":${CAB_SOURCE}"
-        CAB_JSON+=",\"valgrind\":${CAB_VALGRIND}"
-        CAB_JSON+="},"
+for CAB_J in "${CAB_MATRIX_M32[@]}" ; do
+        for CAB_I in "${CAB_JOBS[@]}" ; do
+                CAB_JSON+="{"
+                CAB_JSON+="\"job\":\"${CAB_I}\""
+                CAB_JSON+=",\"m32\":${CAB_J}"
+                CAB_JSON+=",\"mesonargs\":${CAB_MESONARGS}"
+                CAB_JSON+=",\"source\":${CAB_SOURCE}"
+                CAB_JSON+=",\"valgrind\":${CAB_VALGRIND}"
+                CAB_JSON+="},"
+        done
 done
 CAB_JSON=${CAB_JSON::-1} # drop last comma
 CAB_JSON+="]"

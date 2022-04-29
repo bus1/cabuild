@@ -22,6 +22,11 @@ on:
         description: "Run in 32bit mode"
         required: false
         type: boolean
+      matrixmode:
+        default: false
+        description: "Duplicate jobs for each enabled alternative"
+        required: false
+        type: boolean
       mesonargs:
         default: ""
         description: "Additional arguments to meson setup"
@@ -34,7 +39,7 @@ on:
         type: string
       valgrind:
         default: false
-        description: "Run through valgrind"
+        description: "Run through valgrind (always uses matrix-mode)"
         required: false
         type: boolean
 
@@ -62,6 +67,7 @@ jobs:
         CTX_INPUTS_CABUILD_REF: ${{ inputs.cabuild_ref }}
         CTX_INPUTS_IMAGE: ${{ inputs.image }}
         CTX_INPUTS_M32: ${{ inputs.m32 }}
+        CTX_INPUTS_MATRIXMODE: ${{ inputs.matrixmode }}
         CTX_INPUTS_MESONARGS: ${{ inputs.mesonargs }}
         CTX_INPUTS_SOURCE: ${{ inputs.source }}
         CTX_INPUTS_VALGRIND: ${{ inputs.valgrind }}
