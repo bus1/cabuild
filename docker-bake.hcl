@@ -189,7 +189,7 @@ target "virtual-ci-c-util" {
 
 target "ci-c-util-latest" {
         args = {
-                CAB_FROM = "docker.io/library/fedora:36",
+                CAB_FROM = "docker.io/library/fedora:latest",
         }
         inherits = [
                 "virtual-ci-c-util",
