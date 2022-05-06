@@ -67,6 +67,7 @@ function "mirror" {
 
 group "all-images" {
         targets = [
+                "all-dbrk-test-fedora",
                 "all-ci-c-util",
         ]
 }
@@ -89,6 +90,76 @@ target "virtual-platforms" {
         platforms = [
                 "linux/amd64",
         ]
+}
+
+/*
+ * dbrk-test-fedora - DBus Broker Fedora Test Images
+ *
+ * The following groups and targets build test images used by dbus-broker. They
+ * build on the official fedora images.
+ */
+
+group "all-dbrk-test-fedora" {
+        targets = [
+                "dbrk-test-fedora-latest",
+        ]
+}
+
+target "virtual-dbrk-test-fedora" {
+        args = {
+                CAB_DNF_PACKAGES = join(",", [
+                        "audit-libs-devel",
+                        "binutils-devel",
+                        "clang",
+                        "coreutils",
+                        "dbus-daemon",
+                        "dbus-devel",
+                        "expat-devel",
+                        "gcc",
+                        "gdb",
+                        "git",
+                        "glib2-devel",
+                        "glibc-devel",
+                        "htop",
+                        "jq",
+                        "libcap-ng-devel",
+                        "libselinux-devel",
+                        "lld",
+                        "make",
+                        "meson",
+                        "ninja-build",
+                        "patch",
+                        "pkgconf",
+                        "python3-docutils",
+                        "strace",
+                        "sudo",
+                        "systemd",
+                        "systemd-devel",
+                        "util-linux",
+                        "valgrind",
+                        "vim",
+                ]),
+                CAB_DNF_GROUPS = join(",", [
+                        "development-tools",
+                ]),
+        }
+        dockerfile = "src/image/dbrk-test-fedora.Dockerfile"
+        inherits = [
+                "virtual-default",
+                "virtual-platforms",
+        ]
+}
+
+target "dbrk-test-fedora-latest" {
+        args = {
+                CAB_FROM = "docker.io/library/fedora:latest",
+        }
+        inherits = [
+                "virtual-dbrk-test-fedora",
+        ]
+        tags = concat(
+                mirror("dbrk-test-fedora", "latest", "", CAB_UNIQUEID),
+        )
 }
 
 /*
