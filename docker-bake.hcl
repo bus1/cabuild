@@ -67,7 +67,7 @@ function "mirror" {
 
 group "all-images" {
         targets = [
-                "all-dbrk-test-fedora",
+                "all-dbrk-fedora-base",
                 "all-ci-c-util",
         ]
 }
@@ -93,19 +93,19 @@ target "virtual-platforms" {
 }
 
 /*
- * dbrk-test-fedora - DBus Broker Fedora Test Images
+ * dbrk-fedora-base - DBus Broker Fedora Test Images
  *
  * The following groups and targets build test images used by dbus-broker. They
  * build on the official fedora images.
  */
 
-group "all-dbrk-test-fedora" {
+group "all-dbrk-fedora-base" {
         targets = [
-                "dbrk-test-fedora-latest",
+                "dbrk-fedora-base-latest",
         ]
 }
 
-target "virtual-dbrk-test-fedora" {
+target "virtual-dbrk-fedora-base" {
         args = {
                 CAB_DNF_PACKAGES = join(",", [
                         "audit-libs-devel",
@@ -143,22 +143,22 @@ target "virtual-dbrk-test-fedora" {
                         "development-tools",
                 ]),
         }
-        dockerfile = "src/image/dbrk-test-fedora.Dockerfile"
+        dockerfile = "src/image/dbrk-fedora-base.Dockerfile"
         inherits = [
                 "virtual-default",
                 "virtual-platforms",
         ]
 }
 
-target "dbrk-test-fedora-latest" {
+target "dbrk-fedora-base-latest" {
         args = {
                 CAB_FROM = "docker.io/library/fedora:36",
         }
         inherits = [
-                "virtual-dbrk-test-fedora",
+                "virtual-dbrk-fedora-base",
         ]
         tags = concat(
-                mirror("dbrk-test-fedora", "latest", "", CAB_UNIQUEID),
+                mirror("dbrk-fedora-base", "latest", "", CAB_UNIQUEID),
         )
 }
 

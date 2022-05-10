@@ -1,5 +1,5 @@
 #
-# dbrk-test-fedora - DBus Broker Fedora Test Image
+# dbrk-fedora-base - DBus Broker Fedora Test Image
 #
 # A small fedora-based image to be used by dbus-broker for integration tests
 # of new builds.
