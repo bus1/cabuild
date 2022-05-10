@@ -152,7 +152,7 @@ target "virtual-dbrk-fedora-base" {
 
 target "dbrk-fedora-base-latest" {
         args = {
-                CAB_FROM = "docker.io/library/fedora:36",
+                CAB_FROM = "docker.io/library/fedora:latest",
         }
         inherits = [
                 "virtual-dbrk-fedora-base",
@@ -262,7 +262,7 @@ target "virtual-ci-c-util" {
 
 target "ci-c-util-latest" {
         args = {
-                CAB_FROM = "docker.io/library/fedora:36",
+                CAB_FROM = "docker.io/library/fedora:latest",
         }
         inherits = [
                 "virtual-ci-c-util",
