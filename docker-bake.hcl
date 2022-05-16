@@ -69,6 +69,7 @@ group "all-images" {
         targets = [
                 "all-ci-c-util",
                 "all-dbrk-fedora-base",
+                "all-fedpkg",
         ]
 }
 
@@ -271,5 +272,90 @@ target "dbrk-fedora-base-latest" {
         ]
         tags = concat(
                 mirror("dbrk-fedora-base", "latest", "", CAB_UNIQUEID),
+        )
+}
+
+/*
+ * fedpkg - Fedora Package Management Images
+ *
+ * The fedpkg images build on Fedora with the `fedpkg` tools included, and are
+ * tailored towards releasing packages into Fedora via a container.
+ */
+
+group "all-fedpkg" {
+        targets = [
+                "fedpkg-latest",
+        ]
+}
+
+target "virtual-fedpkg" {
+        args = {
+                CAB_DNF_PACKAGES = join(",", [
+                        "audit-libs-devel",
+                        "bash",
+                        "binutils-devel",
+                        "clang",
+                        "coreutils",
+                        "curl",
+                        "dnf",
+                        "fedpkg",
+                        "file",
+                        "findutils",
+                        "gawk",
+                        "gcc",
+                        "gdb",
+                        "gettext",
+                        "git",
+                        "glibc-devel",
+                        "grep",
+                        "groff",
+                        "gzip",
+                        "htop",
+                        "iproute",
+                        "jq",
+                        "krb5-workstation",
+                        "lld",
+                        "make",
+                        "meson",
+                        "ninja-build",
+                        "patch",
+                        "pkgconf",
+                        "procps-ng",
+                        "rpm",
+                        "rpm-build",
+                        "rpmdevtools",
+                        "rust",
+                        "sed",
+                        "strace",
+                        "sudo",
+                        "systemd",
+                        "systemd-devel",
+                        "tar",
+                        "texinfo",
+                        "util-linux",
+                        "which",
+                        "valgrind",
+                        "vim",
+                ]),
+                CAB_DNF_GROUPS = join(",", [
+                        "development-tools",
+                ]),
+        }
+        dockerfile = "src/image/fedpkg.Dockerfile"
+        inherits = [
+                "virtual-default",
+                "virtual-platforms",
+        ]
+}
+
+target "fedpkg-latest" {
+        args = {
+                CAB_FROM = "docker.io/library/fedora:latest",
+        }
+        inherits = [
+                "virtual-fedpkg",
+        ]
+        tags = concat(
+                mirror("fedpkg", "latest", "", CAB_UNIQUEID),
         )
 }
