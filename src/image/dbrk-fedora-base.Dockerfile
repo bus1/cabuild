@@ -33,6 +33,10 @@ ARG             CAB_DNF_PACKAGES=""
 ARG             CAB_DNF_GROUPS=""
 RUN             ./src/image-script/dnf.sh "${CAB_DNF_PACKAGES}" "${CAB_DNF_GROUPS}"
 
+RUN             useradd -ms /bin/bash -g root -G wheel test
+RUN             chpasswd <<<"root:"
+RUN             chpasswd <<<"test:"
+
 RUN             rm -rf /cab/src
 
 #
