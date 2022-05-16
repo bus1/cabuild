@@ -67,8 +67,8 @@ function "mirror" {
 
 group "all-images" {
         targets = [
-                "all-dbrk-fedora-base",
                 "all-ci-c-util",
+                "all-dbrk-fedora-base",
         ]
 }
 
@@ -90,77 +90,6 @@ target "virtual-platforms" {
         platforms = [
                 "linux/amd64",
         ]
-}
-
-/*
- * dbrk-fedora-base - DBus Broker Fedora Test Images
- *
- * The following groups and targets build test images used by dbus-broker. They
- * build on the official fedora images.
- */
-
-group "all-dbrk-fedora-base" {
-        targets = [
-                "dbrk-fedora-base-latest",
-        ]
-}
-
-target "virtual-dbrk-fedora-base" {
-        args = {
-                CAB_DNF_PACKAGES = join(",", [
-                        "audit-libs-devel",
-                        "binutils-devel",
-                        "clang",
-                        "coreutils",
-                        "dbus-daemon",
-                        "dbus-devel",
-                        "expat-devel",
-                        "gcc",
-                        "gdb",
-                        "git",
-                        "glib2-devel",
-                        "glibc-devel",
-                        "htop",
-                        "jq",
-                        "libcap-ng-devel",
-                        "libselinux-devel",
-                        "lld",
-                        "make",
-                        "meson",
-                        "ninja-build",
-                        "patch",
-                        "pkgconf",
-                        "procps-ng",
-                        "python3-docutils",
-                        "strace",
-                        "sudo",
-                        "systemd",
-                        "systemd-devel",
-                        "util-linux",
-                        "valgrind",
-                        "vim",
-                ]),
-                CAB_DNF_GROUPS = join(",", [
-                        "development-tools",
-                ]),
-        }
-        dockerfile = "src/image/dbrk-fedora-base.Dockerfile"
-        inherits = [
-                "virtual-default",
-                "virtual-platforms",
-        ]
-}
-
-target "dbrk-fedora-base-latest" {
-        args = {
-                CAB_FROM = "docker.io/library/fedora:latest",
-        }
-        inherits = [
-                "virtual-dbrk-fedora-base",
-        ]
-        tags = concat(
-                mirror("dbrk-fedora-base", "latest", "", CAB_UNIQUEID),
-        )
 }
 
 /*
@@ -271,5 +200,76 @@ target "ci-c-util-latest" {
         ]
         tags = concat(
                 mirror("ci-c-util", "latest", "", CAB_UNIQUEID),
+        )
+}
+
+/*
+ * dbrk-fedora-base - DBus Broker Fedora Test Images
+ *
+ * The following groups and targets build test images used by dbus-broker. They
+ * build on the official fedora images.
+ */
+
+group "all-dbrk-fedora-base" {
+        targets = [
+                "dbrk-fedora-base-latest",
+        ]
+}
+
+target "virtual-dbrk-fedora-base" {
+        args = {
+                CAB_DNF_PACKAGES = join(",", [
+                        "audit-libs-devel",
+                        "binutils-devel",
+                        "clang",
+                        "coreutils",
+                        "dbus-daemon",
+                        "dbus-devel",
+                        "expat-devel",
+                        "gcc",
+                        "gdb",
+                        "git",
+                        "glib2-devel",
+                        "glibc-devel",
+                        "htop",
+                        "jq",
+                        "libcap-ng-devel",
+                        "libselinux-devel",
+                        "lld",
+                        "make",
+                        "meson",
+                        "ninja-build",
+                        "patch",
+                        "pkgconf",
+                        "procps-ng",
+                        "python3-docutils",
+                        "strace",
+                        "sudo",
+                        "systemd",
+                        "systemd-devel",
+                        "util-linux",
+                        "valgrind",
+                        "vim",
+                ]),
+                CAB_DNF_GROUPS = join(",", [
+                        "development-tools",
+                ]),
+        }
+        dockerfile = "src/image/dbrk-fedora-base.Dockerfile"
+        inherits = [
+                "virtual-default",
+                "virtual-platforms",
+        ]
+}
+
+target "dbrk-fedora-base-latest" {
+        args = {
+                CAB_FROM = "docker.io/library/fedora:latest",
+        }
+        inherits = [
+                "virtual-dbrk-fedora-base",
+        ]
+        tags = concat(
+                mirror("dbrk-fedora-base", "latest", "", CAB_UNIQUEID),
         )
 }
