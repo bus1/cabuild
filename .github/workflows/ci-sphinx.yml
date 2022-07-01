@@ -1,0 +1,41 @@
+#
+# CI-Sphinx Runner - Sphinx Documentation CI Runner for Github Actions
+#
+
+name: "Sphinx CI Runner"
+
+on:
+  workflow_call:
+    inputs:
+      builder:
+        default: "html"
+        description: "Sphinx builder to use"
+        required: false
+        type: string
+      image:
+        default: "ghcr.io/bus1/ci-c-util:latest"
+        description: "Container image to use as environment"
+        required: false
+        type: string
+      source:
+        default: "."
+        description: "File system path to the source directory relative to the workspace"
+        required: false
+        type: string
+
+jobs:
+
+  sphinx:
+    name: "Sphinx Documentation Builder"
+
+    container:
+      image: ${{ inputs.image }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: "Clone Source Repository"
+      uses: actions/checkout@v3
+      with:
+        path: "source"
+    - name: "Build Documentation"
+      run: sphinx-build -b "${{ inputs.builder }}" "./source/${{ inputs.source }}" "./build"
