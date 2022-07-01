@@ -149,11 +149,14 @@ target "virtual-ci-c-util" {
                         "pkgconf",
                         "procps-ng",
                         "pylint",
+                        "python3-clang",
                         "python3-docutils",
                         "python3-devel",
                         "python3-mako",
+                        "python3-pip",
                         "python3-pylint",
                         "python3-pytest",
+                        "python3-sphinx",
                         "qemu-img",
                         "qemu-system-x86",
                         "rpm",
@@ -184,6 +187,10 @@ target "virtual-ci-c-util" {
                 ]),
                 CAB_DNF_GROUPS = join(",", [
                         "development-tools",
+                ]),
+                CAB_PIP_PACKAGES = join(",", [
+                        "c-apidocs",
+                        "hawkmoth",
                 ]),
         }
         dockerfile = "src/image/ci-c-util.Dockerfile"

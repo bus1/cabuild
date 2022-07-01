@@ -24,6 +24,10 @@
 #   * CAB_DNF_GROUPS_ALT=""
 #       Like `CAB_DNF_GROUPS` but installed in a second step.
 #
+#   * CAB_PIP_PACKAGES=""
+#       Specify the packages to install into the container via pip. Separate
+#       packages by comma. By default, no package is pulled in.
+#
 
 ARG             CAB_FROM="docker.io/library/fedora:latest"
 FROM            "${CAB_FROM}" AS target
@@ -47,6 +51,9 @@ RUN             ./src/image-script/dnf.sh "${CAB_DNF_PACKAGES}" "${CAB_DNF_GROUP
 ARG             CAB_DNF_PACKAGES_ALT=""
 ARG             CAB_DNF_GROUPS_ALT=""
 RUN             ./src/image-script/dnf.sh "${CAB_DNF_PACKAGES_ALT}" "${CAB_DNF_GROUPS_ALT}"
+
+ARG             CAB_PIP_PACKAGES=""
+RUN             ./src/image-script/pip.sh "${CAB_PIP_PACKAGES}"
 
 RUN             rm -rf /cab/src
 
