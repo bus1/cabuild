@@ -115,6 +115,7 @@ target "virtual-ci-c-util" {
                         "bison-devel",
                         "cargo",
                         "clang",
+                        "clang-devel",
                         "coreutils",
                         "curl",
                         "dbus-daemon",
