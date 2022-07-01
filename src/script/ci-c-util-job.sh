@@ -29,6 +29,14 @@ CAB_VALGRIND="false"
 
 failexit() { printf "==> ERROR: $1\n" "${@:2}"; exit 1; } >&2
 
+abspath() {
+        PREV=$PWD
+        cd "$(dirname "$1")"
+        REALPATH="$PWD/$(basename "$1")"
+        cd "$PREV"
+        echo "$REALPATH"
+}
+
 #
 # Argument Parsers
 #
@@ -39,7 +47,7 @@ CAB_MESONARGS=$(jq -r .mesonargs < <(printf "%s" "${CTX_MATRIX_JOB}"))
 CAB_SOURCE_RAW=$(jq -r .source < <(printf "%s" "${CTX_MATRIX_JOB}"))
 CAB_VALGRIND=$(jq -r .valgrind < <(printf "%s" "${CTX_MATRIX_JOB}"))
 
-CAB_SOURCE="$(readlink -f "./source/${CAB_SOURCE_RAW}/")"
+CAB_SOURCE="$(abspath "./source/${CAB_SOURCE_RAW}/")"
 if [[ ! -d "${CAB_SOURCE}" ]] ; then
         failexit '%s: non-existant source directory -- '\''%s'\' "${0##*/}" "${CAB_SOURCE_RAW}"
 fi

@@ -17,9 +17,19 @@ on:
         description: "Container image to use as environment"
         required: false
         type: string
+      linux:
+        default: true
+        description: "Run on Linux"
+        required: false
+        type: boolean
       m32:
         default: false
         description: "Run in 32bit mode"
+        required: false
+        type: boolean
+      macos:
+        default: false
+        description: "Run on MacOS"
         required: false
         type: boolean
       matrixmode:
@@ -42,6 +52,11 @@ on:
         description: "Run through valgrind (always uses matrix-mode)"
         required: false
         type: boolean
+      windows:
+        default: false
+        description: "Run on Windows"
+        required: false
+        type: boolean
 
 jobs:
 
@@ -49,7 +64,9 @@ jobs:
     name: "Job Configuration"
     runs-on: ubuntu-latest
     outputs:
-      jobs: ${{ steps.parameters.outputs.jobs }}
+      jobs_linux: ${{ steps.parameters.outputs.jobs_linux }}
+      jobs_macos: ${{ steps.parameters.outputs.jobs_macos }}
+      jobs_windows: ${{ steps.parameters.outputs.jobs_windows }}
     steps:
     - name: "Clone CABuild Repository"
       uses: actions/checkout@v3
@@ -66,31 +83,111 @@ jobs:
       env:
         CTX_INPUTS_CABUILD_REF: ${{ inputs.cabuild_ref }}
         CTX_INPUTS_IMAGE: ${{ inputs.image }}
+        CTX_INPUTS_LINUX: ${{ inputs.linux }}
         CTX_INPUTS_M32: ${{ inputs.m32 }}
+        CTX_INPUTS_MACOS: ${{ inputs.macos }}
         CTX_INPUTS_MATRIXMODE: ${{ inputs.matrixmode }}
         CTX_INPUTS_MESONARGS: ${{ inputs.mesonargs }}
         CTX_INPUTS_SOURCE: ${{ inputs.source }}
         CTX_INPUTS_VALGRIND: ${{ inputs.valgrind }}
+        CTX_INPUTS_WINDOWS: ${{ inputs.windows }}
       run: bash ./cabuild/src/script/ci-c-util-suite.sh
     - name: "Print Parameters"
       env:
-        CTX_STEPS_PARAMETERS_OUTPUTS_JOBS: ${{ steps.parameters.outputs.jobs }}
+        CTX_STEPS_PARAMETERS_OUTPUTS_JOBS_LINUX: ${{ steps.parameters.outputs.jobs_linux }}
+        CTX_STEPS_PARAMETERS_OUTPUTS_JOBS_MACOS: ${{ steps.parameters.outputs.jobs_macos }}
+        CTX_STEPS_PARAMETERS_OUTPUTS_JOBS_WINDOWS: ${{ steps.parameters.outputs.jobs_windows }}
       run: |
         echo "Jobs:"
-        echo "${CTX_STEPS_PARAMETERS_OUTPUTS_JOBS}" | jq .
+        echo "${CTX_STEPS_PARAMETERS_OUTPUTS_JOBS_LINUX}" | jq .
+        echo "${CTX_STEPS_PARAMETERS_OUTPUTS_JOBS_MACOS}" | jq .
+        echo "${CTX_STEPS_PARAMETERS_OUTPUTS_JOBS_WINDOWS}" | jq .
         echo "End of Images"
 
-  ci:
-    name: "Job Execution"
-    runs-on: ubuntu-latest
+  ci-linux:
+    name: "Linux Job Execution"
+
     container:
       image: ${{ inputs.image }}
     needs: config
+    runs-on: ubuntu-latest
+
+    if: ${{ inputs.linux }}
     strategy:
       fail-fast: false
       matrix:
-        job: ${{ fromJson(needs.config.outputs.jobs) }}
+        job: ${{ fromJson(needs.config.outputs.jobs_linux) }}
     steps:
+    - name: "Clone CABuild Repository"
+      uses: actions/checkout@v3
+      with:
+        path: "cabuild"
+        ref: ${{ inputs.cabuild_ref }}
+        repository: "bus1/cabuild"
+    - name: "Clone Source Repository"
+      uses: actions/checkout@v3
+      with:
+        path: "source"
+    - name: "Invoke job executor"
+      env:
+        CTX_MATRIX_JOB: ${{ toJson(matrix.job) }}
+      run: bash ./cabuild/src/script/ci-c-util-job.sh
+
+  ci-macos:
+    name: "MacOS Job Execution"
+
+    needs: config
+    runs-on: macos-latest
+
+    if: ${{ inputs.macos }}
+    strategy:
+      fail-fast: false
+      matrix:
+        job: ${{ fromJson(needs.config.outputs.jobs_macos) }}
+    steps:
+    - name: "Setup Python"
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: "Install Python Dependencies"
+      run: pip install meson ninja
+    - name: "Clone CABuild Repository"
+      uses: actions/checkout@v3
+      with:
+        path: "cabuild"
+        ref: ${{ inputs.cabuild_ref }}
+        repository: "bus1/cabuild"
+    - name: "Clone Source Repository"
+      uses: actions/checkout@v3
+      with:
+        path: "source"
+    - name: "Invoke job executor"
+      env:
+        CTX_MATRIX_JOB: ${{ toJson(matrix.job) }}
+      run: bash ./cabuild/src/script/ci-c-util-job.sh
+
+  ci-windows:
+    name: "Windows Job Execution"
+
+    needs: config
+    runs-on: windows-latest
+
+    if: ${{ inputs.windows }}
+    strategy:
+      fail-fast: false
+      matrix:
+        job: ${{ fromJson(needs.config.outputs.jobs_windows) }}
+    steps:
+    - name: "Setup Python"
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: "Install Python Dependencies"
+      run: pip install meson ninja
+    - name: "Prepare MSVC"
+      uses: bus1/cabuild/action/msdevshell@v1
+      with:
+        architecture: x64
     - name: "Clone CABuild Repository"
       uses: actions/checkout@v3
       with:
