@@ -157,6 +157,7 @@ target "virtual-ci-c-util" {
                         "python3-pylint",
                         "python3-pytest",
                         "python3-sphinx",
+                        "python3-sphinx_rtd_theme",
                         "qemu-img",
                         "qemu-system-x86",
                         "rpm",
