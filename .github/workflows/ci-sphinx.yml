@@ -38,4 +38,4 @@ jobs:
       with:
         path: "source"
     - name: "Build Documentation"
-      run: sphinx-build -b "${{ inputs.builder }}" "./source/${{ inputs.source }}" "./build"
+      run: sphinx-build -W -b "${{ inputs.builder }}" "./source/${{ inputs.source }}" "./build"
