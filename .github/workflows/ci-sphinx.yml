@@ -17,6 +17,11 @@ on:
         description: "Container image to use as environment"
         required: false
         type: string
+      meson:
+        default: false
+        description: "Initialize Meson Build"
+        required: false
+        type: boolean
       source:
         default: "."
         description: "File system path to the source directory relative to the workspace"
@@ -37,5 +42,9 @@ jobs:
       uses: actions/checkout@v3
       with:
         path: "source"
+    - name: "Fetch Meson Subprojects"
+      if: ${{ inputs.meson }}
+      run: meson subprojects download
+      working-directory: "./source"
     - name: "Build Documentation"
       run: sphinx-build -W -b "${{ inputs.builder }}" "./source/${{ inputs.source }}" "./build"
