@@ -39,7 +39,7 @@ CAB_JOBS_LINUX+=("c-util-llvm")
 
 CAB_JOBS_MACOS+=("c-util-llvm")
 
-CAB_JOBS_WINDOWS+=("c-util-llvm")
+CAB_JOBS_WINDOWS+=("c-util-msvc")
 
 #
 # Argument Parsers
