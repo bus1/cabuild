@@ -19,6 +19,7 @@ CAB_JOB="none"
 CAB_M32="false"
 CAB_MESONARGS=""
 CAB_NL=$'\n'
+CAB_SANITIZERS=""
 CAB_SOURCE="."
 CAB_SOURCE_RAW="."
 CAB_VALGRIND="false"
@@ -44,6 +45,7 @@ abspath() {
 CAB_JOB=$(jq -r .job < <(printf "%s" "${CTX_MATRIX_JOB}"))
 CAB_M32=$(jq -r .m32 < <(printf "%s" "${CTX_MATRIX_JOB}"))
 CAB_MESONARGS=$(jq -r .mesonargs < <(printf "%s" "${CTX_MATRIX_JOB}"))
+CAB_SANITIZERS=$(jq -r .sanitizers < <(printf "%s" "${CTX_MATRIX_JOB}"))
 CAB_SOURCE_RAW=$(jq -r .source < <(printf "%s" "${CTX_MATRIX_JOB}"))
 CAB_VALGRIND=$(jq -r .valgrind < <(printf "%s" "${CTX_MATRIX_JOB}"))
 
@@ -115,6 +117,15 @@ if [[ ! -z "${CAB_MESONARGS}" ]] ; then
         CAB_CMD_SETUP+=" ${CAB_MESONARGS[@]}"
 fi
 
+if [[ ! -z ${CAB_SANITIZERS} ]]; then
+        CAB_CMD_SETUP+=" -Db_sanitizers=$CAB_SANITIZERS"
+
+        # See: https://github.com/mesonbuild/meson/issues/764
+        if [[ $CAB_JOB =~ llvm ]]; then
+            CAB_CMD_SETUP+=" -Db_lundef=false"
+        fi
+fi
+
 CAB_CMD_BUILD="ninja -v"
 
 CAB_CMD_TEST_BASIC="meson test --print-errorlogs"
@@ -123,6 +134,14 @@ CAB_CMD_DEFAULT="${CAB_CMD_SETUP} . ${CAB_SOURCE}"
 CAB_CMD_DEFAULT+="${CAB_NL}${CAB_NL}"
 CAB_CMD_DEFAULT+="${CAB_CMD_BUILD}"
 CAB_CMD_DEFAULT+="${CAB_NL}${CAB_NL}"
+
+if [[ ! -z ${CAB_SANITIZERS} ]]; then
+    CAB_CMD_DEFAULT+="export ASAN_OPTIONS=strict_string_checks=1:detect_stack_use_after_return=1:check_initialization_order=1:strict_init_order=1"
+    CAB_CMD_DEFAULT+="${CAB_NL}"
+    CAB_CMD_DEFAULT+="export UBSAN_OPTIONS=print_stacktrace=1:print_summary=1:halt_on_error=1"
+    CAB_CMD_DEFAULT+="${CAB_NL}${CAB_NL}"
+fi
+
 CAB_CMD_DEFAULT+="${CAB_CMD_TEST_BASIC}"
 
 if [[ ${CAB_VALGRIND} == "true" ]] ; then

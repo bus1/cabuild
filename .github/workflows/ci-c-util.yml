@@ -42,6 +42,11 @@ on:
         description: "Additional arguments to meson setup"
         required: false
         type: string
+      sanitizers:
+        default: ""
+        description: "Build and test with specified sanitizers"
+        required: false
+        type: string
       source:
         default: "."
         description: "File system path to the source directory relative to the workspace"
@@ -88,6 +93,7 @@ jobs:
         CTX_INPUTS_MACOS: ${{ inputs.macos }}
         CTX_INPUTS_MATRIXMODE: ${{ inputs.matrixmode }}
         CTX_INPUTS_MESONARGS: ${{ inputs.mesonargs }}
+        CTX_INPUTS_SANITIZERS: ${{ inputs.sanitizers }}
         CTX_INPUTS_SOURCE: ${{ inputs.source }}
         CTX_INPUTS_VALGRIND: ${{ inputs.valgrind }}
         CTX_INPUTS_WINDOWS: ${{ inputs.windows }}
