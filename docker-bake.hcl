@@ -116,6 +116,7 @@ target "virtual-ci-c-util" {
                         "cargo",
                         "clang",
                         "clang-devel",
+                        "compiler-rt",
                         "coreutils",
                         "curl",
                         "dbus-daemon",
