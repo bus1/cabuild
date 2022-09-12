@@ -1,0 +1,30 @@
+---
+
+name: Linters
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  differential-shellcheck:
+    name: Differential ShellCheck
+    runs-on: ubuntu-latest
+
+    permissions:
+      security-events: write
+      pull-requests: write
+
+    steps:
+      - name: Repository checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      # Doc: https://github.com/redhat-plumbers-in-action/differential-shellcheck#usage
+      - name: Differential ShellCheck
+        uses: redhat-plumbers-in-action/differential-shellcheck@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
