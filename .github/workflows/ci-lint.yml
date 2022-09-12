@@ -1,0 +1,35 @@
+#
+# GitHub-Actions Linters
+#
+# This workflow runs code linters on the entire code-base. Different kind of
+# linters for different sources are available.
+#
+
+name: "Linter checks"
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  ci_shellcheck:
+    name: "Differential ShellCheck"
+    runs-on: ubuntu-latest
+
+    permissions:
+      security-events: write
+      pull-requests: write
+
+    steps:
+    - name: "Clone Repository"
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: "Run the Differential ShellCheck"
+      uses: redhat-plumbers-in-action/differential-shellcheck@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
