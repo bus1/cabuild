@@ -97,9 +97,9 @@ CAB_JSON=${CAB_JSON::-1} # drop last comma
 CAB_JSON+="]"
 
 if [[ ${CAB_LINUX} == "true" ]] ; then
-        echo "::set-output name=jobs_linux::${CAB_JSON}"
+        echo "jobs_linux=${CAB_JSON}" >>$GITHUB_OUTPUT
 else
-        echo "::set-output name=jobs_linux::[]"
+        echo "jobs_linux=[]" >>$GITHUB_OUTPUT
 fi
 
 #
@@ -122,9 +122,9 @@ CAB_JSON=${CAB_JSON::-1} # drop last comma
 CAB_JSON+="]"
 
 if [[ ${CAB_MACOS} == "true" ]] ; then
-        echo "::set-output name=jobs_macos::${CAB_JSON}"
+        echo "jobs_macos=${CAB_JSON}" >>$GITHUB_OUTPUT
 else
-        echo "::set-output name=jobs_macos::[]"
+        echo "jobs_macos=[]" >>$GITHUB_OUTPUT
 fi
 
 #
@@ -147,7 +147,7 @@ CAB_JSON=${CAB_JSON::-1} # drop last comma
 CAB_JSON+="]"
 
 if [[ ${CAB_WINDOWS} == "true" ]] ; then
-        echo "::set-output name=jobs_windows::${CAB_JSON}"
+        echo "jobs_windows=${CAB_JSON}" >>$GITHUB_OUTPUT
 else
-        echo "::set-output name=jobs_windows::[]"
+        echo "jobs_windows=[]" >>$GITHUB_OUTPUT
 fi
