@@ -23,6 +23,7 @@ CAB_MACOS="false"
 CAB_MATRIX_M32=()
 CAB_MATRIXMODE="false"
 CAB_MESONARGS=""
+CAB_SANITIZERS=""
 CAB_SOURCE="."
 CAB_VALGRIND="false"
 CAB_WINDOWS="false"
@@ -70,6 +71,7 @@ if [[ ${CTX_INPUTS_WINDOWS} == "true" ]] ; then
 fi
 
 CAB_MESONARGS=$(jq -cRs . < <(printf "%s" "${CTX_INPUTS_MESONARGS}"))
+CAB_SANITIZERS=$(jq -cRs . < <(printf "%s" "${CTX_INPUTS_SANITIZERS}"))
 CAB_SOURCE=$(jq -cRs . < <(printf "%s" "${CTX_INPUTS_SOURCE}"))
 
 CAB_MATRIX_M32=("${CAB_M32}")
@@ -88,6 +90,7 @@ for CAB_J in "${CAB_MATRIX_M32[@]}" ; do
                 CAB_JSON+="\"job\":\"${CAB_I}\""
                 CAB_JSON+=",\"m32\":${CAB_J}"
                 CAB_JSON+=",\"mesonargs\":${CAB_MESONARGS}"
+                CAB_JSON+=",\"sanitizers\":${CAB_SANITIZERS}"
                 CAB_JSON+=",\"source\":${CAB_SOURCE}"
                 CAB_JSON+=",\"valgrind\":${CAB_VALGRIND}"
                 CAB_JSON+="},"
@@ -113,6 +116,7 @@ for CAB_J in "${CAB_MATRIX_M32[@]}" ; do
                 CAB_JSON+="\"job\":\"${CAB_I}\""
                 CAB_JSON+=",\"m32\":${CAB_J}"
                 CAB_JSON+=",\"mesonargs\":${CAB_MESONARGS}"
+                CAB_JSON+=",\"sanitizers\":${CAB_SANITIZERS}"
                 CAB_JSON+=",\"source\":${CAB_SOURCE}"
                 CAB_JSON+=",\"valgrind\":${CAB_VALGRIND}"
                 CAB_JSON+="},"
@@ -138,6 +142,7 @@ for CAB_J in "${CAB_MATRIX_M32[@]}" ; do
                 CAB_JSON+="\"job\":\"${CAB_I}\""
                 CAB_JSON+=",\"m32\":${CAB_J}"
                 CAB_JSON+=",\"mesonargs\":${CAB_MESONARGS}"
+                CAB_JSON+=",\"sanitizers\":${CAB_SANITIZERS}"
                 CAB_JSON+=",\"source\":${CAB_SOURCE}"
                 CAB_JSON+=",\"valgrind\":${CAB_VALGRIND}"
                 CAB_JSON+="},"
