@@ -55,7 +55,7 @@ RUN             ./src/image-script/dnf.sh "${CAB_DNF_PACKAGES_ALT}" "${CAB_DNF_G
 ARG             CAB_PIP_PACKAGES=""
 RUN             ./src/image-script/pip.sh "${CAB_PIP_PACKAGES}"
 
-RUN             git config --global --add safe.directory '*'
+RUN             git config --system --add safe.directory '*'
 
 RUN             rm -rf /cab/src
 
