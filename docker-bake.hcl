@@ -68,6 +68,7 @@ function "mirror" {
 group "all-images" {
         targets = [
                 "all-ci-c-util",
+                "all-dbrk-ci-fedora",
                 "all-dbrk-fedora-base",
                 "all-fedpkg",
         ]
@@ -211,6 +212,121 @@ target "ci-c-util-latest" {
         ]
         tags = concat(
                 mirror("ci-c-util", "latest", "", CAB_UNIQUEID),
+        )
+}
+
+/*
+ * dbrk-ci-fedora - DBus Broker Fedora CI Images
+ *
+ * The following groups and targets build the Fedora CI images used by
+ * dbus-broker. They build on the official fedora images.
+ */
+
+group "all-dbrk-ci-fedora" {
+        targets = [
+                "dbrk-ci-fedora-latest",
+        ]
+}
+
+target "virtual-dbrk-ci-fedora" {
+        args = {
+                CAB_DNF_PACKAGES = join(",", [
+                        "audit-libs-devel",
+                        "bash",
+                        "binutils-devel",
+                        "bison-devel",
+                        "cargo",
+                        "clang",
+                        "clang-devel",
+                        "coreutils",
+                        "curl",
+                        "dbus-daemon",
+                        "dbus-devel",
+                        "dnf",
+                        "expat-devel",
+                        "file",
+                        "findutils",
+                        "flex-devel",
+                        "gawk",
+                        "gcc",
+                        "gdb",
+                        "gettext",
+                        "git",
+                        "glib2-devel",
+                        "glibc-devel",
+                        "grep",
+                        "groff",
+                        "gzip",
+                        "htop",
+                        "iproute",
+                        "jq",
+                        "libasan",
+                        "libcap-ng-devel",
+                        "libselinux-devel",
+                        "libubsan",
+                        "lld",
+                        "make",
+                        "meson",
+                        "ninja-build",
+                        "patch",
+                        "pkgconf",
+                        "procps-ng",
+                        "pylint",
+                        "python3-clang",
+                        "python3-docutils",
+                        "python3-devel",
+                        "python3-mako",
+                        "python3-pip",
+                        "python3-pylint",
+                        "python3-pytest",
+                        "qemu-img",
+                        "qemu-system-x86",
+                        "rpm",
+                        "rpm-build",
+                        "rpmdevtools",
+                        "rust",
+                        "sed",
+                        "strace",
+                        "sudo",
+                        "systemd",
+                        "systemd-devel",
+                        "tar",
+                        "texinfo",
+                        "util-linux",
+                        "which",
+                        "valgrind",
+                        "vim",
+                ]),
+                CAB_DNF_PACKAGES_ALT = join(",", [
+                        "audit-libs-devel.i686",
+                        "dbus-devel.i686",
+                        "expat-devel.i686",
+                        "glibc-devel.i686",
+                        "libcap-ng-devel.i686",
+                        "libselinux-devel.i686",
+                        "systemd-devel.i686",
+                        "valgrind.i686",
+                ]),
+                CAB_DNF_GROUPS = join(",", [
+                        "development-tools",
+                ]),
+        }
+        dockerfile = "src/image/dbrk-ci-fedora.Dockerfile"
+        inherits = [
+                "virtual-default",
+                "virtual-platforms",
+        ]
+}
+
+target "dbrk-ci-fedora-latest" {
+        args = {
+                CAB_FROM = "docker.io/library/fedora:latest",
+        }
+        inherits = [
+                "virtual-dbrk-ci-fedora",
+        ]
+        tags = concat(
+                mirror("dbrk-ci-fedora", "latest", "", CAB_UNIQUEID),
         )
 }
 
