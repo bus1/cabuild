@@ -1,40 +1,45 @@
 #
-# CI for Image Builds
+# Container Images
 #
-# This workflow builds all images on every PR and Push. It verifies that the
-# images can be built successfully, and then possibly runs tests to verify
-# their correct behavior.
+# This workflow builds all container images on every PR and Push that modifies
+# relevant paths. It verifies that the images can be built successfully, and
+# then possibly runs tests to verify their correct behavior.
 #
 # If triggered by the deploy-hooks, the built images will be pushed out to
 # the configured registries.
 #
 
-name: "CI for Image Builds"
+name: "Container Images"
 
 on:
   pull_request:
+    branches: ["main"]
     paths:
-    - 'docker-bake.hcl'
-    - 'src/image/**'
-    - 'src/image-script/**'
+    - ".github/workflows/containers.yml"
+    - "lib/containers/**"
   push:
+    branches: ["main", "wip/**"]
     paths:
-    - 'docker-bake.hcl'
-    - 'src/image/**'
-    - 'src/image-script/**'
+    - ".github/workflows/containers.yml"
+    - "lib/containers/**"
   workflow_dispatch:
     inputs:
       target:
-        description: 'Image Target'
+        description: "Container Target"
         required: true
-        default: 'default'
+        default: "all-images"
+
+defaults:
+  run:
+    shell: "bash"
+    working-directory: "./lib/containers"
 
 jobs:
   #
   # Configure Jobs
   #
   # This job prepares parameters for the further builds. Amongst other things,
-  # it runs `make img-list` and provides this output as JSON array to other
+  # it list all targets and provides this output as JSON array to other
   # jobs. This allows us to dynamically react to additions to the image list
   # and create new jobs for each image.
   #
@@ -65,7 +70,7 @@ jobs:
         fi
 
         echo "deploy=${IMG_DEPLOY}" >>$GITHUB_OUTPUT
-        echo "images=$(make img-list)" >>$GITHUB_OUTPUT
+        echo "images=$(docker buildx bake --print "${IMG_TARGET}" | jq -ce ".target | keys")" >>$GITHUB_OUTPUT
         echo "now=$(date -u '+%Y%m%d%H%M')" >>$GITHUB_OUTPUT
     - name: "Print Parameters"
       env:
@@ -89,6 +94,8 @@ jobs:
     name: "Image Build/Test"
     runs-on: ubuntu-latest
     needs: config
+    permissions:
+      packages: write
     strategy:
       fail-fast: false
       matrix:
@@ -107,10 +114,8 @@ jobs:
 
     - name: "Build Image"
       env:
-        IMG_BAKE_ARGS: --load
-        IMG_BUILDER: ${{ steps.buildx.outputs.name }}
         IMG_TARGET: ${{ matrix.image }}
-      run: make img-bake
+      run: docker buildx bake --load "${IMG_TARGET}"
 
     - name: "Authenticate to GHCR"
       if: ${{ needs.config.outputs.deploy == 'yes' }}
@@ -123,6 +128,8 @@ jobs:
     - name: "Deploy Image"
       if: ${{ needs.config.outputs.deploy == 'yes' }}
       env:
-        IMG_BUILDER: ${{ steps.buildx.outputs.name }}
         IMG_TARGET: ${{ matrix.image }}
-      run: make img-tags | jq -c '.[] | select(test("^ghcr.io"))' | xargs -L1 -- docker push
+      run: |
+        docker buildx bake --print "${IMG_TARGET}" | \
+            jq -cer '.target[].tags[] | select(test("^ghcr.io"))' | \
+            xargs -L1 -- docker push

@@ -24,14 +24,14 @@ FROM            "${CAB_FROM}" AS target
 #
 
 WORKDIR         /cab
-COPY            src src
+COPY            tools tools
 
 ARG             CAB_APT_PACKAGES=""
-RUN             ./src/image-script/apt.sh "${CAB_APT_PACKAGES}"
+RUN             ./tools/apt.sh "${CAB_APT_PACKAGES}"
 
 RUN             git config --system --add safe.directory '*'
 
-RUN             rm -rf /cab/src
+RUN             rm -rf /cab/tools
 
 #
 # Rebuild from scratch to drop all intermediate layers and keep the final image

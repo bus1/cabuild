@@ -38,19 +38,19 @@ FROM            "${CAB_FROM}" AS target
 #
 
 WORKDIR         /cab
-COPY            src src
+COPY            tools tools
 
 ARG             CAB_DNF_PACKAGES=""
 ARG             CAB_DNF_GROUPS=""
-RUN             ./src/image-script/dnf.sh "${CAB_DNF_PACKAGES}" "${CAB_DNF_GROUPS}"
+RUN             ./tools/dnf.sh "${CAB_DNF_PACKAGES}" "${CAB_DNF_GROUPS}"
 
 ARG             CAB_DNF_PACKAGES_ALT=""
 ARG             CAB_DNF_GROUPS_ALT=""
-RUN             ./src/image-script/dnf.sh "${CAB_DNF_PACKAGES_ALT}" "${CAB_DNF_GROUPS_ALT}"
+RUN             ./tools/dnf.sh "${CAB_DNF_PACKAGES_ALT}" "${CAB_DNF_GROUPS_ALT}"
 
 RUN             git config --system --add safe.directory '*'
 
-RUN             rm -rf /cab/src
+RUN             rm -rf /cab/tools
 
 #
 # Rebuild from scratch to drop all intermediate layers and keep the final image

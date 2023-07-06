@@ -197,7 +197,7 @@ target "virtual-ci-c-util" {
                         "hawkmoth",
                 ]),
         }
-        dockerfile = "src/image/ci-c-util.Dockerfile"
+        dockerfile = "ci-c-util.Dockerfile"
         inherits = [
                 "virtual-default",
                 "virtual-platforms",
@@ -312,7 +312,7 @@ target "virtual-dbrk-ci-fedora" {
                         "development-tools",
                 ]),
         }
-        dockerfile = "src/image/dbrk-ci-fedora.Dockerfile"
+        dockerfile = "dbrk-ci-fedora.Dockerfile"
         inherits = [
                 "virtual-default",
                 "virtual-platforms",
@@ -412,7 +412,7 @@ target "virtual-dbrk-ci-ubuntu" {
                         "vim",
                 ]),
         }
-        dockerfile = "src/image/dbrk-ci-ubuntu.Dockerfile"
+        dockerfile = "dbrk-ci-ubuntu.Dockerfile"
         inherits = [
                 "virtual-default",
                 "virtual-platforms",
@@ -485,7 +485,7 @@ target "virtual-dbrk-fedora-base" {
                         "development-tools",
                 ]),
         }
-        dockerfile = "src/image/dbrk-fedora-base.Dockerfile"
+        dockerfile = "dbrk-fedora-base.Dockerfile"
         inherits = [
                 "virtual-default",
                 "virtual-platforms",
@@ -571,7 +571,7 @@ target "virtual-fedpkg" {
                         "development-tools",
                 ]),
         }
-        dockerfile = "src/image/fedpkg.Dockerfile"
+        dockerfile = "fedpkg.Dockerfile"
         inherits = [
                 "virtual-default",
                 "virtual-platforms",
