@@ -34,7 +34,7 @@ ARG             CAB_DNF_GROUPS=""
 RUN             ./src/image-script/dnf.sh "${CAB_DNF_PACKAGES}" "${CAB_DNF_GROUPS}"
 
 RUN             sed -i 's|default_ccache_name = KEYRING:.*$|default_ccache_name = FILE:/tmp/krb5keyring|' /etc/krb5.conf
-RUN             git config --global --add safe.directory '*'
+RUN             git config --system --add safe.directory '*'
 
 RUN             rm -rf /cab/src
 
