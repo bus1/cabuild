@@ -69,6 +69,7 @@ group "all-images" {
         targets = [
                 "all-ci-c-util",
                 "all-dbrk-ci-fedora",
+                "all-dbrk-ci-ubuntu",
                 "all-dbrk-fedora-base",
                 "all-fedpkg",
         ]
@@ -327,6 +328,106 @@ target "dbrk-ci-fedora-latest" {
         ]
         tags = concat(
                 mirror("dbrk-ci-fedora", "latest", "", CAB_UNIQUEID),
+        )
+}
+
+/*
+ * dbrk-ci-ubuntu - DBus Broker Ubuntu CI Images
+ *
+ * The following groups and targets build the Ubuntu CI images used by
+ * dbus-broker. They build on the official Ubuntu images.
+ */
+
+group "all-dbrk-ci-ubuntu" {
+        targets = [
+                "dbrk-ci-ubuntu-latest",
+        ]
+}
+
+target "virtual-dbrk-ci-ubuntu" {
+        args = {
+                CAB_APT_PACKAGES = join(",", [
+                        "apparmor",
+                        "bash",
+                        "binutils-dev",
+                        "build-essential",
+                        "cargo",
+                        "clang",
+                        "coreutils",
+                        "curl",
+                        "dbus-daemon",
+                        "debianutils",
+                        "file",
+                        "findutils",
+                        "flex",
+                        "gawk",
+                        "gcc",
+                        "gdb",
+                        "gettext",
+                        "git",
+                        "grep",
+                        "groff",
+                        "gzip",
+                        "htop",
+                        "iproute2",
+                        "jq",
+                        "libapparmor-dev",
+                        "libasan8",
+                        "libaudit-dev",
+                        "libbison-dev",
+                        "libc-dev",
+                        "libcap-ng-dev",
+                        "libclang-dev",
+                        "libdbus-1-dev",
+                        "libexpat-dev",
+                        "libglib2.0-dev",
+                        "libselinux-dev",
+                        "libsystemd-dev",
+                        "libubsan1",
+                        "lld",
+                        "make",
+                        "meson",
+                        "ninja-build",
+                        "patch",
+                        "pkgconf",
+                        "procps",
+                        "pylint",
+                        "python3-clang",
+                        "python3-docutils",
+                        "python3-dev",
+                        "python3-mako",
+                        "python3-pip",
+                        "python3-pytest",
+                        "qemu-system-x86",
+                        "qemu-utils",
+                        "rust-all",
+                        "sed",
+                        "strace",
+                        "sudo",
+                        "systemd",
+                        "tar",
+                        "texinfo",
+                        "util-linux",
+                        "valgrind",
+                        "vim",
+                ]),
+        }
+        dockerfile = "src/image/dbrk-ci-ubuntu.Dockerfile"
+        inherits = [
+                "virtual-default",
+                "virtual-platforms",
+        ]
+}
+
+target "dbrk-ci-ubuntu-latest" {
+        args = {
+                CAB_FROM = "docker.io/library/ubuntu:latest",
+        }
+        inherits = [
+                "virtual-dbrk-ci-ubuntu",
+        ]
+        tags = concat(
+                mirror("dbrk-ci-ubuntu", "latest", "", CAB_UNIQUEID),
         )
 }
 
