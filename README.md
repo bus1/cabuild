@@ -8,7 +8,7 @@ with reproducibility and content-addressable input/output.
 
 ### Project
 
- * **Website**: <https://github.com/bus1/cabuild/wiki>
+ * **Website**: <https://bus1.eu/lib/cabuild>
  * **Bug Tracker**: <https://github.com/bus1/cabuild/issues>
 
 ### Repository:
@@ -19,5 +19,5 @@ with reproducibility and content-addressable input/output.
 
 ### License:
 
- - **Apache-2.0** OR **LGPL-2.1-or-later**
+ - **MIT** OR **Apache-2.0** OR **LGPL-2.1-or-later**
  - See AUTHORS file for details.
