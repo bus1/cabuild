@@ -72,6 +72,7 @@ group "all-images" {
                 "all-dbrk-ci-ubuntu",
                 "all-dbrk-fedora-base",
                 "all-fedpkg",
+                "all-plumbing",
         ]
 }
 
@@ -587,5 +588,68 @@ target "fedpkg-latest" {
         ]
         tags = concat(
                 mirror("fedpkg", "latest", "", CAB_UNIQUEID),
+        )
+}
+
+/*
+ * plumbing - Bus1 Plumbing Image
+ *
+ * This image is based on Ubuntu and pulls in all required tools used
+ * by project maintenance.
+ */
+
+group "all-plumbing" {
+        targets = [
+                "plumbing-latest",
+        ]
+}
+
+target "virtual-plumbing" {
+        args = {
+                CAB_APT_PACKAGES = join(",", [
+                        "bash",
+                        "binutils-dev",
+                        "build-essential",
+                        "coreutils",
+                        "curl",
+                        "debianutils",
+                        "file",
+                        "findutils",
+                        "gawk",
+                        "gettext",
+                        "git",
+                        "grep",
+                        "gzip",
+                        "htop",
+                        "iproute2",
+                        "jq",
+                        "make",
+                        "procps",
+                        "rclone",
+                        "sed",
+                        "sudo",
+                        "systemd",
+                        "tar",
+                        "texinfo",
+                        "util-linux",
+                        "vim",
+                ]),
+        }
+        dockerfile = "plumbing.Dockerfile"
+        inherits = [
+                "virtual-default",
+                "virtual-platforms",
+        ]
+}
+
+target "plumbing-latest" {
+        args = {
+                CAB_FROM = "docker.io/library/ubuntu:latest",
+        }
+        inherits = [
+                "virtual-plumbing",
+        ]
+        tags = concat(
+                mirror("plumbing", "latest", "", CAB_UNIQUEID),
         )
 }
