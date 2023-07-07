@@ -91,7 +91,7 @@ jobs:
         CTX_INPUTS_SOURCE: ${{ inputs.source }}
         CTX_INPUTS_VALGRIND: ${{ inputs.valgrind }}
         CTX_INPUTS_WINDOWS: ${{ inputs.windows }}
-      run: bash ./cabuild/src/script/ci-c-util-suite.sh
+      run: bash ./cabuild/lib/scripts/ci-c-util-suite.sh
     - name: "Print Parameters"
       env:
         CTX_STEPS_PARAMETERS_OUTPUTS_JOBS_LINUX: ${{ steps.parameters.outputs.jobs_linux }}
@@ -131,7 +131,7 @@ jobs:
     - name: "Invoke job executor"
       env:
         CTX_MATRIX_JOB: ${{ toJson(matrix.job) }}
-      run: bash ./cabuild/src/script/ci-c-util-job.sh
+      run: bash ./cabuild/lib/scripts/ci-c-util-job.sh
 
   ci-macos:
     name: "MacOS Job Execution"
@@ -164,7 +164,7 @@ jobs:
     - name: "Invoke job executor"
       env:
         CTX_MATRIX_JOB: ${{ toJson(matrix.job) }}
-      run: bash ./cabuild/src/script/ci-c-util-job.sh
+      run: bash ./cabuild/lib/scripts/ci-c-util-job.sh
 
   ci-windows:
     name: "Windows Job Execution"
