@@ -6,19 +6,29 @@
 # latest version.
 #
 
-name: "CI for Custom Actions"
+name: "Custom Action Tests"
 
-on: [pull_request, push]
+on:
+  pull_request:
+  push:
+    branches-ignore: ["pr/**"]
+    tags: ["**"]
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: "bash"
 
 jobs:
-  ci_msdevshell_testing:
+  msdevshell_testing:
     name: "Test the MsDevShell Action"
-    runs-on: ${{ matrix.os }}
+
     strategy:
       matrix:
-        arch: [x64, x86]
-        os: [windows-2019, windows-latest]
+        arch: ["x64", "x86"]
+        os: ["windows-2019", "windows-latest"]
 
+    runs-on: ${{ matrix.os }}
 
     steps:
     - name: "Clone Repository"
@@ -32,9 +42,9 @@ jobs:
     - name: "Verify MsDevShell"
       run: cl
 
-  ci_msdevshell_release:
+  msdevshell_release:
     name: "Verify the MsDevShell Action Release"
-    runs-on: windows-latest
+    runs-on: "windows-latest"
 
     steps:
     - name: "Run released MsDevShell action"

@@ -1,27 +1,33 @@
 #
-# GitHub-Actions Linters
+# Linter Checks
 #
 # This workflow runs code linters on the entire code-base. Different kind of
 # linters for different sources are available.
 #
 
-name: "Linter checks"
+name: "Linter Checks"
 
 on:
   pull_request:
-    branches: [main]
+  push:
+    branches-ignore: ["pr/**"]
+    tags: ["**"]
+  workflow_dispatch:
 
-permissions:
-  contents: read
+defaults:
+  run:
+    shell: "bash"
 
 jobs:
-  ci_shellcheck:
+  shellcheck:
     name: "Differential ShellCheck"
-    runs-on: ubuntu-latest
 
     permissions:
-      security-events: write
+      contents: read
       pull-requests: write
+      security-events: write
+
+    runs-on: "ubuntu-latest"
 
     steps:
     - name: "Clone Repository"

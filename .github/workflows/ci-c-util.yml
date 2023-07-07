@@ -58,6 +58,10 @@ on:
         required: false
         type: boolean
 
+defaults:
+  run:
+    shell: "bash"
+
 jobs:
 
   config:
