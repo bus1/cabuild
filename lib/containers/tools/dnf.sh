@@ -51,7 +51,6 @@ if (( ${#CAB_PACKAGES[@]} )) ; then
                 --setopt=fastestmirror=True \
                 --setopt=install_weak_deps=False \
                 install \
-                -- \
                         "${CAB_PACKAGES[@]}"
 fi
 
@@ -61,7 +60,6 @@ if (( ${#CAB_GROUPS[@]} )) ; then
                 --setopt=fastestmirror=True \
                 --setopt=install_weak_deps=False \
                 group install \
-                -- \
                         "${CAB_GROUPS[@]}"
 fi
 
