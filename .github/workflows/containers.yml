@@ -103,6 +103,19 @@ jobs:
     env:
       CAB_UNIQUEID: ${{ needs.config.outputs.now }}
     steps:
+    - name: "Clean up Disk Space"
+      working-directory: "."
+      run: |
+        df -h
+        sudo rm -rf \
+          /opt/ghc \
+          /opt/hostedtoolcache/CodeQL \
+          /usr/local/lib/android \
+          /usr/share/dotnet
+        sudo docker image prune --all --force
+        sudo docker builder prune -a
+        df -h
+
     - name: "Clone Repository"
       uses: actions/checkout@v3
 
