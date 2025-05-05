@@ -114,6 +114,7 @@ target "virtual-ci-c-util" {
                 CAB_DNF_PACKAGES = join(",", [
                         "audit-libs-devel",
                         "bash",
+                        "bindgen-cli",
                         "binutils-devel",
                         "bison-devel",
                         "cargo",
@@ -235,6 +236,7 @@ target "virtual-dbrk-ci-fedora" {
                 CAB_DNF_PACKAGES = join(",", [
                         "audit-libs-devel",
                         "bash",
+                        "bindgen-cli",
                         "binutils-devel",
                         "bison-devel",
                         "cargo",
@@ -350,6 +352,7 @@ target "virtual-dbrk-ci-ubuntu" {
                 CAB_APT_PACKAGES = join(",", [
                         "apparmor",
                         "bash",
+                        "bindgen",
                         "binutils-dev",
                         "build-essential",
                         "ca-certificates",
@@ -524,6 +527,7 @@ target "virtual-fedpkg" {
                 CAB_DNF_PACKAGES = join(",", [
                         "audit-libs-devel",
                         "bash",
+                        "bindgen-cli",
                         "binutils-devel",
                         "cargo",
                         "clang",
