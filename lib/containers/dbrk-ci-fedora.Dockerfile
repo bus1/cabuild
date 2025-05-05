@@ -50,7 +50,7 @@ RUN             ./tools/dnf.sh "${CAB_DNF_PACKAGES_ALT}" "${CAB_DNF_GROUPS_ALT}"
 
 ENV             CARGO_HOME=/cab/cargo
 ENV             RUSTUP_HOME=/cab/rustup
-ENV             PATH="$PATH:/cab/cargo/bin"
+ENV             PATH="/cab/cargo/bin:$PATH"
 
 RUN             rustup-init --no-modify-path -y
 
