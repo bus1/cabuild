@@ -48,6 +48,23 @@ ARG             CAB_DNF_PACKAGES_ALT=""
 ARG             CAB_DNF_GROUPS_ALT=""
 RUN             ./tools/dnf.sh "${CAB_DNF_PACKAGES_ALT}" "${CAB_DNF_GROUPS_ALT}"
 
+ENV             CARGO_HOME=/cab/cargo
+ENV             RUSTUP_HOME=/cab/rustup
+ENV             PATH="$PATH:/cab/cargo/bin"
+
+RUN             rustup-init --no-modify-path -y
+
+RUN             rustup toolchain install nightly
+RUN             rustup toolchain install stable
+RUN             rustup component add --toolchain nightly rust-src
+RUN             rustup component add --toolchain stable rust-src
+RUN             rustup target add x86_64-unknown-linux-gnu
+RUN             rustup target add i686-unknown-linux-gnu
+
+
+RUN             chgrp -R wheel /cab/cargo /cab/rustup
+RUN             chmod -R g=u /cab/cargo /cab/rustup
+
 RUN             git config --system --add safe.directory '*'
 
 RUN             rm -rf /cab/tools
